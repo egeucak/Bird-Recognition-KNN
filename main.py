@@ -28,13 +28,6 @@ def getAttributeDict():
 		attributeDict = getNameID(im_loc, attributeDict)
 	return attributeDict
 
-def getAttributeDictV2():
-	fileTrain = open("train.txt", "r").read().splitlines()
-	attributeDict={}
-	for im_loc in fileTrain:
-		attributeDict = getNameIDV2(im_loc, attributeDict)
-	return attributeDict
-
 def getAttributeDictFolded():
 	fileTrain = open("train.txt", "r").read().splitlines()
 	trainDict={}
@@ -46,27 +39,16 @@ def getAttributeDictFolded():
 			testDict = getNameID(im_loc, testDict)
 	return trainDict, testDict
 
-def getTestAttribute(attributeDictRev):
+def getTestAttribute():
 	attributeDict={}
-	x = 0
-	for i in range(6033):
-		try:
-			aaa = attributeDictRev[i]
-		except:
-			x = x + 1
-			attributeDict[str(x)+".jpg"] = i
+	for i in range(1000):
+		attributeDict[str(i+1) + ".jpg"] = i
 	return attributeDict
 
 def getNameID(loc, nameId):
 	ID = int(loc.split(" ")[0])
 	name = loc.split(" ")[1]
 	nameId[name] = ID
-	return nameId
-
-def getNameIDV2(loc, nameId):
-	ID = int(loc.split(" ")[0])
-	name = loc.split(" ")[1]
-	nameId[ID] = name
 	return nameId
 
 def train(locationIm, locationAn, attributeAndName, attributes, dataSet, test=0):
@@ -118,11 +100,11 @@ def knnCalculate(distance, histW, attW, k):
 
 def main(histogramWeight, attributeWeight, distType, k):
 	attributeAndName = getAttributeDict()
-	attributeAndNameV2 = getAttributeDictV2()
 	attributes = np.load('attributes.npy')
+	attributes_test = np.load('test_attributes.npy')
 	dataSet = []
 
-	'''
+
 	startTime = time.time()
 	for elm in attributeAndName:
 		locationIm = './images/images/'+ elm
@@ -132,12 +114,12 @@ def main(histogramWeight, attributeWeight, distType, k):
 	print ("Trained training group in {} seconds".format(endTime-startTime))
 
 	testSet = []
-	testAttributeAndName = getTestAttribute(attributeAndNameV2)
+	testAttributeAndName = getTestAttribute()
 	startTime = time.time()
 	for elm in testAttributeAndName:
 		locationIm = './test_images/' + elm
 		locationAn = './test_annotations/' + ".".join(elm.split(".")[:-1]) + ".mat"
-		testSet = train(locationIm, locationAn, testAttributeAndName, attributes, testSet,1)
+		testSet = train(locationIm, locationAn, testAttributeAndName, attributes_test, testSet,1)
 	endTime = time.time()
 	print ("Trained test group in {} seconds".format(endTime-startTime))
 
@@ -156,9 +138,9 @@ def main(histogramWeight, attributeWeight, distType, k):
 	print("Calculated distance in {} seconds".format(time.time()-start))
 	printFile(f, "kaggle.csv")
 
-
-	THE PART BELOW IS FOR TESTING WITH A PART OF TRAINING DATA
 	'''
+	THE PART BELOW IS FOR TESTING WITH A PART OF TRAINING DATA
+
 
 	trainDict, testDict = getAttributeDictFolded()
 	startTime = time.time()
@@ -197,7 +179,7 @@ def main(histogramWeight, attributeWeight, distType, k):
 	print("Accuracy for {} distance {}nn is {}% for histogram weight {}, and attribute weight {}.".format(distType, k, (correct/(correct+false))*100, histogramWeight, attributeWeight))
 
 
-	'''
+
 	THAT PART ENDS HERE
 	'''
 
