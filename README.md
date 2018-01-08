@@ -1,2 +1,3 @@
-# bbm409-assignment1-egeucak
-bbm409-assignment1-egeucak created by GitHub Classroom
+# Bird Recognition with kNN
+
+A project for machine learning course at Hacettepe University Computer Science Department.
